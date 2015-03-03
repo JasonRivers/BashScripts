@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+# Script to start development version of RIDE
+
+RIDE_LOCATION=${HOME}/Development/RideJS
+
+# If we have an argument then use it as the port - if it isn't a port, stop misusing my script. :-)
+if [ "$1" ]; then
+  RIDE_PORT=$1
+  # Arguments for Ride  -l = listen + port
+  RIDE_ARGS=" -l $RIDE_PORT"
+fi
+cd $RIDE_LOCATION
+# Update sources
+git pull
+# build Ride
+./dist.sh
+# run Ride with the listen arguments - carry on.
+./build/ride/linux64/ride $RIDE_ARGS &

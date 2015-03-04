@@ -3,18 +3,21 @@
 set -e
 # Script to start development version of RIDE
 
-RIDE_LOCATION=${HOME}/Development/RideJS
+if [ -d "${HOME}/Development/RideJS" ]; then
 
-# If we have an argument then use it as the port - if it isn't a port, stop misusing my script. :-)
-if [ "$1" ]; then
-  RIDE_PORT=$1
-  # Arguments for Ride  -l = listen + port
-  RIDE_ARGS=" -l $RIDE_PORT"
+	RIDE_LOCATION=${HOME}/Development/RideJS
+
+	# Pass the arguments on to Ride
+	cd $RIDE_LOCATION
+	# Update sources
+	git pull
+	# build Ride
+	./dist.sh
+	# run Ride with the listen arguments - carry on.
+	./build/ride/linux64/ride $@ &
+
+elif [ -d "${HOME}/Ride" ]; then
+
+	#run RIDE from user home directory
+	${HOME}/Ride/ride $@ &
 fi
-cd $RIDE_LOCATION
-# Update sources
-git pull
-# build Ride
-./dist.sh
-# run Ride with the listen arguments - carry on.
-./build/ride/linux64/ride $RIDE_ARGS &

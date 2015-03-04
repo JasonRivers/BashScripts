@@ -22,7 +22,7 @@ if [ "`which ride`" ]; then
   export RIDE_CONNECT=127.0.0.1:${RIDE_PORT}
   # Start ride listening on the port we've picked
   # and scrap the output, because we don't care for now.
-  ride ${RIDE_PORT} >/dev/null 2>&1 
+  ride -l ${RIDE_PORT} >/dev/null 2>&1 
   echo "Ride running on $RIDE_PORT"
   # Give RIDE time to start listening - shouldn't be needed with Dyalog 14.1+
   sleep 2

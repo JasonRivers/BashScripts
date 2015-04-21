@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -e
+
+getFileFromDeb() {
+
+DEBTMP=/tmp/deb$$
+mkdir -p $DEBTMP
+cp $PACKAGE $DEBTMP
+cd $DEBTMP
+ar -vx $PACKAGE_FILENAME >/dev/null 2>/dev/null
+FILE_LOCATION=`tar -tzf data.tar.gz | grep "\/$FILE\$"`
+
+tar xzf data.tar.gz $FILE_LOCATION
+
+cd $CURDIR
+cp $DEBTMP/$FILE_LOCATION ./
+
+#cleanup
+rm -Rf $DEBTMP
+
+
+}
+
+getFileFromRpm() {
+
+RPMTMP=/tmp/rpm$$
+mkdir -p $RPMTMP
+cd $RPMTMP
+
+FILE_LOCATION=`rpm -qlp $PACKAGE| grep "\/$FILE\$"`
+rpm2cpio $PACKAGE| cpio -ivd .$FILE_LOCATION >/dev/null 2>&1
+
+cd $CURDIR
+
+cp $RPMTMP/$FILE_LOCATION ./
+rm -Rf $RPMTMP
+
+}
+
+PACKAGE=$1
+FILE=$2
+PACKAGE_FILENAME=`echo $PACKAGE | sed 's/.*\///'`
+EXT=`echo $PACKAGE | sed 's/.*\.//'`
+
+CURDIR=`pwd`
+
+case $EXT in
+	deb)
+		getFileFromDeb
+		;;
+	rpm)
+		getFileFromRpm
+		;;
+	*)
+		>&2 echo "Unknown package type"
+		exit 1
+		;;
+esac

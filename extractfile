@@ -17,10 +17,9 @@ getFileFromTGZ() {
 	cd $TGZTMP
 	FILE_LOCATION=`tar -tzf $P | grep "\/$FILE\$"`
 	tar xzf $P $FILE_LOCATION
-
 	cd $CURDIR
 	cp $TGZTMP/$FILE_LOCATION ./
-	
+	echo "extracted $FILE from $PACKAGE ($FILE_LOCATION)"
 	rm -Rf $TGZTMP
 }
 getFileFromDeb() {
@@ -30,10 +29,7 @@ getFileFromDeb() {
 	cp $PACKAGE $DEBTMP
 	cd $DEBTMP
 	ar -vx $PACKAGE_FILENAME >/dev/null 2>/dev/null
-
 	getFileFromTGZ $DEBTMP/data.tar.gz
-
-	#cleanup
 	rm -Rf $DEBTMP
 
 }
@@ -43,13 +39,11 @@ getFileFromRpm() {
 	RPMTMP=/tmp/rpm$$
 	mkdir -p $RPMTMP
 	cd $RPMTMP
-
 	FILE_LOCATION=`rpm -qlp $PACKAGE| grep "\/$FILE\$"`
 	rpm2cpio $PACKAGE| cpio -ivd .$FILE_LOCATION >/dev/null 2>&1
-
 	cd $CURDIR
-
 	cp $RPMTMP/$FILE_LOCATION ./
+	echo "extracted $FILE from $PACKAGE ($FILE_LOCATION)"
 	rm -Rf $RPMTMP
 
 }
@@ -58,20 +52,18 @@ getFileFromZip() {
 
 	ZIPTMP=/tmp/zip$$
 	mkdir $ZIPTMP
-
 	cd $ZIPTMP
 	FILE_LOCATION=`unzip -l $PACKAGE | awk '{print $4}' | grep "\/$FILE\$"`
-
 	unzip -p $PACKAGE $FILE_LOCATION > $FILE
-
 	cd $CURDIR
 	cp $ZIPTMP/$FILE ./
-
+	echo "extracted $FILE from $PACKAGE ($FILE_LOCATION)"
 	rm -Rf $ZIPTMP
 }
 
 PACKAGE=$1
 FILE=$2
+PACKAGE_FILENAME=`echo $PACKAGE | sed 's/.*\///'`
 EXT=${PACKAGE: -3}
 
 if [ "$EXT" = ".gz" ]; then

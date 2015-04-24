@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -e -x
 
 # This script is useful when you have set times of the day that downloading
 # is cheap.
@@ -100,17 +100,24 @@ fi
 mkdir -p $DOWNLOAD_LOCATION
 cd $DOWNLOAD_LOCATION
 
-cat $DOWNLOAD_LIST | grep -v "^#" | cat -n | sed 's/#.*//' | while read LNO TYPE DOWNLOAD OPTS ; do
+cat -n $DOWNLOAD_LIST | while read LNO TYPE DOWNLOAD OPTS ; do
 
   case $TYPE in
+    \#*)
+      COMMENT=true
+      # Ignore comment lines
+      ;;
     iplayer)
       getiplayer $DOWNLOAD $OPTS
+      sed -i "${LNO}s/\(.*\)/#\1/" $DOWNLOAD_LIST
       ;;
     youtube)
       getyoutube $DOWNLOAD $OPTS
+      sed -i "${LNO}s/\(.*\)/#\1/" $DOWNLOAD_LIST
       ;;
     http|ftp)
       gethttpftp $DOWNLOAD $OPTS
+      sed -i "${LNO}s/\(.*\)/#\1/" $DOWNLOAD_LIST
       ;;
     *)
         if ! [ "" = "$TYPE" ]; then
@@ -123,6 +130,7 @@ cat $DOWNLOAD_LIST | grep -v "^#" | cat -n | sed 's/#.*//' | while read LNO TYPE
           else
             2>&1 echo "Skipping invalid line $TYPE $DOWNLOAD $OPTS"
           fi
+          sed -i "${LNO}s/\(.*\)/#\1/" $DOWNLOAD_LIST
         fi
         ;;
   esac

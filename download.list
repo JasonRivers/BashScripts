@@ -12,15 +12,15 @@
 # on the URL of the file. You can force a download to use iplayer/youtube/http/
 # ftp using that name in the first element, e.g.
 
-youtube https://www.youtube.com/watch?v=XSGBVzeBUbk
+#youtube https://www.youtube.com/watch?v=XSGBVzeBUbk
 
 # For iPlayer you can give it a URL, or you can give it a program name E.G.
 
-iplayer http://www.bbc.co.uk/iplayer/episode/b05qpndx/have-i-got-news-for-you-series-49-episode-1
-iplayer poldark episode 6
+#iplayer http://www.bbc.co.uk/iplayer/episode/b05qpndx/have-i-got-news-for-you-series-49-episode-1
+#iplayer Formula 1 race
 
 # you don't need the first element to specify what to use, it's really only
 # useful when downloading a program using iplayer by name, The following works
 # too.
 
-http://releases.ubuntu.com/14.10/ubuntu-14.10-desktop-amd64.iso
+#http://releases.ubuntu.com/14.10/ubuntu-14.10-desktop-amd64.iso

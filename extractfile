@@ -1,6 +1,12 @@
 #!/bin/bash
 
-set -e -x
+set -e
+
+usage() {
+	echo "Usage:"
+	echo "extractfile [package] [filename]"
+	exit 0
+}
 
 getFileFromTGZ() {
 
@@ -66,7 +72,6 @@ getFileFromZip() {
 
 PACKAGE=$1
 FILE=$2
-PACKAGE_FILENAME=`echo $PACKAGE | sed 's/.*\///'`
 EXT=${PACKAGE: -3}
 
 if [ "$EXT" = ".gz" ]; then
@@ -74,6 +79,10 @@ if [ "$EXT" = ".gz" ]; then
 fi
 
 CURDIR=`pwd`
+
+if ! [ "$PACKAGE" ]; then
+	usage
+fi
 
 case $EXT in
 	deb)

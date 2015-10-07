@@ -1,0 +1,52 @@
+#!/bin/bash
+#set -x
+
+NOW=`date +%s`
+rssfeed=/tmp/rssfeed${NOW}
+bglist=/tmp/bglist${NOW}
+flist=/tmp/flist${NOW}
+BGPATH=${HOME}/Pictures/Wallpapers/auto
+feeds="https://www.reddit.com/r/EarthPorn/new/.rss https://www.reddit.com/r/EarthPorn/.rss"
+
+user=$(whoami)
+
+fl=$(find /proc -maxdepth 2 -user $user -name environ -print -quit)
+for i in {1..5}
+do
+  fl=$(find /proc -maxdepth 2 -user $user -name environ -newer "$fl" -print -quit)
+done
+
+export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS "$fl" | cut -d= -f2-)
+
+
+mkdir -p ${BGPATH}
+
+for FEED in $feeds; do
+
+	curl -q -s -o $rssfeed $FEED
+
+	cat $rssfeed | sed 's/></>\n</g' | grep "imgur" | sed 's/.*\&\#34;http/http/g;s/\&\#34;\&gt;.*//g;' >> $bglist
+	cat $bglist | grep -v 'jpg' | sed 's/.*\///' | while read URL; do
+	 sed -i "s/${URL}/${URL}.jpg/" $bglist
+	done
+	sed -i "s/\.jpg\.jpg/\.jpg/" $bglist
+
+done
+
+cat $bglist | while read URL; do
+	HASH=`echo $URL | sed 's/.*\///'`
+	if ! [ -s $BGPATH/$HASH ]; then
+		echo "downloading ${HASH}"
+		wget -q -O $BGPATH/$HASH $URL
+	fi
+done
+	
+ls $BGPATH > $flist
+FNAME=`shuf -n 1 $flist`
+
+
+#gsettings set org.gnome.desktop.background picture-uri file://${BGPATH}/${FNAME}
+dconf write "/org/gnome/desktop/background/picture-uri" "'file://${BGPATH}/${FNAME}'"
+
+rm $rssfeed $flist $bglist
+

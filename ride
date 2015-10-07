@@ -3,16 +3,20 @@
 set -e
 # Script to start development version of RIDE
 
-if [ -d "${HOME}/Development/RideJS" ]; then
+if [ -d "${HOME}/Development/ride" ]; then
 
-	RIDE_LOCATION=${HOME}/Development/RideJS
+	RIDE_LOCATION=${HOME}/Development/ride
 
 	# Pass the arguments on to Ride
 	cd $RIDE_LOCATION
-	# Update sources
-	git pull
-	# build Ride
-	./dist.sh
+	if ! ps -A | grep -v $$ | grep ride; then
+		echo "building Ride"
+		# Update sources
+		git pull
+		npm i
+		# build Ride
+		./dist.sh linux64
+	fi
 	# run Ride with the listen arguments - carry on.
 	./build/ride/linux64/ride $@ &
 

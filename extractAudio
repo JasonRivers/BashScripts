@@ -1,0 +1,17 @@
+#!/bin/bash
+set -x
+DIR=$1
+
+for EXT in wmv mp4; do
+	for F in `find $DIR -maxdepth 1 -type f -iname "*.${EXT}" -print`; do
+
+		D=`dirname $F`
+		A=`basename $F | sed 's/wmv/wav/i'`
+		A=`basename $F | sed 's/mp4/wav/i'`
+
+		ffmpeg -i $F -vn -acodec pcm_s16le $D/$A
+
+	done
+
+done
+

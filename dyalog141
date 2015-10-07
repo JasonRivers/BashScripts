@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+DYALOG="/opt/mdyalog/14.1/64/unicode/mapl"
+if ! [ -s $DYALOG ]; then
+  echo "Couldn't find $DYALOG"
+  exit 1
+fi
+echo "Starting Dyalog 14.1 with arguments \"$@\"" 
+
+# show the tracer when there's an error.
+export TRACE_ON_ERROR=1
+
+# if RIDE is on our path, then we'll run it
+if [ "`which ride`" ]; then
+
+  ## Pick a random unused port for RIDE
+  RIDE_PORT=`(netstat  -atn | awk '{printf "%s\n%s\n", $4, $4}' | grep -oE '[0-9]*$'; seq 32768 61000) | sort -n | uniq -u | head -n 1`
+
+  # Variable to tell the interpreter what port to use
+  export RIDE_INIT=CONNECT:127.0.0.1:${RIDE_PORT}
+  # Start ride listening on the port we've picked
+  # and scrap the output, because we don't care for now.
+  ride -l ${RIDE_PORT} >/dev/null 2>&1 
+  echo "Ride listening on port $RIDE_PORT"
+  # Give RIDE time to start listening - shouldn't be needed with Dyalog 14.1+
+  sleep 2
+fi
+$DYALOG -kbd $@

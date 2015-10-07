@@ -45,7 +45,6 @@ ls $BGPATH > $flist
 FNAME=`shuf -n 1 $flist`
 
 
-#gsettings set org.gnome.desktop.background picture-uri file://${BGPATH}/${FNAME}
 dconf write "/org/gnome/desktop/background/picture-uri" "'file://${BGPATH}/${FNAME}'"
 
 rm $rssfeed $flist $bglist

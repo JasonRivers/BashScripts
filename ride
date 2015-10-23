@@ -20,7 +20,7 @@ if [ -d "${HOME}/Development/ride" ]; then
 	# run Ride with the listen arguments - carry on.
 	./build/ride/linux64/ride $@ &
 
-elif [ -d "${HOME}/Ride" ]; then
+elif [ -d "/usr/bin/ride" ]; then
 
 	#run RIDE from user home directory
 	${HOME}/Ride/ride $@ &
